@@ -1,0 +1,53 @@
+version: '3.7'
+
+x-django: &django-base
+  image: django
+  env_file: .env
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.8.2
+
+  postgres:
+    image: postgres:12-alpine
+    command: -c fsync=off
+
+  django:
+    <<: *django-base
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - '8000:8000'
+    depends_on:
+      - postgres
+    volumes:
+      - .:/code
+      - static:/static
+      - media:/media
+
+  celery:
+    <<: *django-base
+    command: celery -A scraper worker -l info -B
+    depends_on:
+      - rabbitmq
+      - postgres
+
+  bootstrap:
+    <<: *django-base
+    command: python manage.py bootstrap
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 10
+        window: 20s
+    depends_on:
+      - postgres
+
+volumes:
+  static:
+    driver: local
+  media:
+    driver: local

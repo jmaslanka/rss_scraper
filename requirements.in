@@ -1,0 +1,9 @@
+Django==2.2.10
+celery==4.4.0
+django-cors-headers==3.2.1
+django-environ==0.4.5
+djangorestframework==3.11.0
+pip-tools==4.4.1
+psycopg2==2.8.4
+requests==2.22.0
+uwsgi==2.0.18
