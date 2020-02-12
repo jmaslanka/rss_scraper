@@ -20,3 +20,8 @@ cp .env.example .env
 docker-compose build
 docker-compose up
 ```
+
+To run tests:
+```
+docker-compose up test
+```

@@ -3,6 +3,8 @@ version: '3.7'
 x-django: &django-base
   image: django
   env_file: .env
+  volumes:
+      - .:/code
 
 services:
   rabbitmq:
@@ -45,6 +47,13 @@ services:
         window: 20s
     depends_on:
       - postgres
+
+  test:
+    <<: *django-base
+    command: pytest
+    depends_on:
+      - postgres
+      - rabbitmq
 
 volumes:
   static:

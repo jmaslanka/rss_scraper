@@ -1,6 +1,7 @@
 import os
 
 import environ
+from celery.schedules import crontab
 
 
 env = environ.Env()
@@ -36,9 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'scraper',
+    'api',
 
-    'corsheaders',
     'rest_framework',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -74,6 +76,18 @@ CELERY_BROKER_URL = env(
     'CELERY_BROKER_URL',
     default='amqp://guest:guest@rabbitmq:5672/'
 )
+CELERY_BEAT_SCHEDULE = {
+    'fetch-exchange-rates': {
+        # Rates are normally updated at 4:15PM+1 but we
+        # wait a few hours to be sure they are updated.
+        'task': 'api.tasks.update_exchange_rates',
+        'schedule': crontab(
+            minute=30,
+            hour=18,
+            day_of_week='mon,tue,wed,thu,fri',
+        )
+    }
+}
 
 TEMPLATES = [
     {
