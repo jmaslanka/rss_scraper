@@ -1,7 +1,7 @@
-import pytest
 from unittest import mock
 
 import requests
+import pytest
 from django.urls import reverse
 from django.test import override_settings
 
@@ -37,7 +37,7 @@ def test_rates_details(client):
 
     currency = CURRENCIES[0][0]
     rate = 12.11
-    ExchangeRate.objects.create(currency=currency, rate=12.110000)
+    ExchangeRate.objects.create(currency=currency, rate=rate)
 
     r = client.get(reverse('api:exchangerate-detail', kwargs=dict(currency=currency)))
     assert r.status_code == 200
